@@ -1,29 +1,29 @@
 #include <iostream>
 #include <string>
+#include <filesystem>
 #include "extract.h"
 #include "language.h"
 #include "level.h"
 
 using namespace std;
+namespace fs = std::filesystem;
 
 int main(int argc, char* argv[]) {
 
     // Setting default folder as the folder where the program was called
-    string folder = "./";
+    fs::path folder = "./";
 
     // If user specified folder when running the program
     if (argc > 1) {
-
         folder = argv[1];
-
     }
 
     // If the choosen directory has POTTER.DIR and POTTER.DAT
     if (check_dir(folder)) {
 
         extract_dat(folder);
-        extract_lang(folder+"POTTER/LANG/");
-        extract_lev(folder+"POTTER/LEV/");
+        extract_lang(folder / "POTTER/LANG");
+        extract_lev(folder / "POTTER/LEV");
 
         cout << "Extraction successfully completed." << endl;
 

@@ -1,8 +1,10 @@
 #include <fstream>
 #include <string>
+#include <filesystem>
 #include "text_decoder.h"
 
 using namespace std;
+namespace fs = std::filesystem;
 
 void initialize_decoder(string * decoder) {
 
@@ -127,7 +129,7 @@ void initialize_decoder(string * decoder) {
 
 }
 
-void decode_game_text(string input_name, string output_name, string * decoder) {
+void decode_game_text(fs::path input_name, fs::path output_name, string decoder[]) {
 
     // Reading language file and creating output file
     ifstream lang_file(input_name, ios::in | ios::binary);
@@ -143,7 +145,4 @@ void decode_game_text(string input_name, string output_name, string * decoder) {
         lang_file.read((char *) &blk, sizeof(blk));
         output_file << decoder[blk.character];
     } while ((lang_file.good()));
-
-    lang_file.close();
-    output_file.close();
 }

@@ -2,10 +2,11 @@
 #include <fstream>
 #include <string>
 #include <climits>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include "textures.h"
 
 using namespace std;
+namespace fs = std::filesystem;
 
 uint16_t* fill_vram(ifstream* tpsx_file, int vram_size, int offset) {
 
@@ -180,8 +181,8 @@ void extract_textures(string file_name) {
     // Creating directory for the textures
     file_name = file_name.substr(0, file_name.size() - 4);
     file_name += "/Textures";
-    boost::filesystem::path tex_path(file_name);
-    boost::filesystem::create_directory(tex_path);
+    fs::path tex_path(file_name);
+    fs::create_directory(tex_path);
 
     for (int i = 0; i < texture_count; i++) {
 

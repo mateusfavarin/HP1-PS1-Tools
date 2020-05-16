@@ -1,47 +1,38 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <boost/filesystem.hpp>
-#include <boost/range.hpp>
+#include <filesystem>
 #include "extract.h"
 
 using namespace std;
+namespace fs = std::filesystem;
 
-bool check_dir(string path) {
+bool check_dir(fs::path file_path) {
 
     // Creating path for current folder
-    boost::filesystem::path folder(path);
+    fs::path folder(file_path);
 
     bool dir = false;
     bool dat = false;
 
     // Checking if the folder has POTTER.DIR and POTTER.DAT files
-    for (auto& entry : boost::make_iterator_range(boost::filesystem::directory_iterator(folder), {})) {
+    for (const auto& entry : fs::directory_iterator(folder)) {
 
-        string file_name = entry.path().string();
-        file_name = file_name.substr(path.size(), file_name.size() - 2);
+        string file_name = entry.path().filename();
 
         if (file_name == "POTTER.DIR") {
-
             dir = true;
-
         } else if (file_name == "POTTER.DAT") {
-
             dat = true;
-
-        }
-
-        // If POTTER.DIR and POTTER.DAT are in the folder
-        if (dir && dat) {
-
-            return true;
-
         }
 
     }
 
+    // If POTTER.DIR and POTTER.DAT are in the folder
+    if (dir && dat) {
+        return true;
+    }
     return false;
-
 }
 
 string convert_file_name(char name[]) {
@@ -62,15 +53,15 @@ string convert_file_name(char name[]) {
     return file_name;
 }
 
-void extract_dat(string path) {
+void extract_dat(fs::path file_path) {
 
     // ifstream to read the Harry Potter DIR and DAT files
     ifstream potter_dir;
     ifstream potter_dat;
 
     // Opening files
-    potter_dir.open(path+"POTTER.DIR", ios::in | ios::binary);
-    potter_dat.open(path+"POTTER.DAT", ios::in | ios::binary);
+    potter_dir.open(file_path / "POTTER.DIR", ios::in | ios::binary);
+    potter_dat.open(file_path / "POTTER.DAT", ios::in | ios::binary);
 
     // Getting number of files to extract
     HEADER header;
@@ -79,16 +70,16 @@ void extract_dat(string path) {
     METADATA metadata;
 
     // Creating directories to put extracted data
-    string potter_path = path+"POTTER";
-    boost::filesystem::path main_potter(potter_path);
-    boost::filesystem::create_directory(main_potter);
+    fs::path potter_path = file_path / "POTTER";
+    fs::path main_potter = potter_path;
+    fs::create_directory(main_potter);
 
-    boost::filesystem::path lang(potter_path+"/LANG");
-    boost::filesystem::create_directory(lang);
-    boost::filesystem::path img(potter_path+"/IMG");
-    boost::filesystem::create_directory(img);
-    boost::filesystem::path lev(potter_path+"/LEV");
-    boost::filesystem::create_directory(lev);
+    fs::path lang(potter_path / "LANG");
+    fs::create_directory(lang);
+    fs::path img(potter_path / "IMG");
+    fs::create_directory(img);
+    fs::path lev(potter_path / "LEV");
+    fs::create_directory(lev);
 
     // Memory block to hold variable size of data to read from the POTTER.DAT
     char * mem_block;
@@ -115,11 +106,11 @@ void extract_dat(string path) {
         // Creating extracted file
         ofstream new_file;
         if (extension == "BIN") {
-            new_file.open(potter_path+"/LANG/"+file_name, ios::out | ios::binary);
+            new_file.open(potter_path / "LANG" / file_name, ios::out | ios::binary);
         } else if (extension == "IMG") {
-            new_file.open(potter_path+"/IMG/"+file_name, ios::out | ios::binary);
+            new_file.open(potter_path / "IMG" / file_name, ios::out | ios::binary);
         } else {
-            new_file.open(potter_path+"/LEV/"+file_name, ios::out | ios::binary);
+            new_file.open(potter_path / "LEV" / file_name, ios::out | ios::binary);
         }
         new_file.write(mem_block, metadata.size);
         new_file.close();
@@ -130,8 +121,5 @@ void extract_dat(string path) {
         cout << file_name << " successfully extracted." << endl;
 
     }
-
-    potter_dir.close();
-    potter_dat.close();
 
 }
