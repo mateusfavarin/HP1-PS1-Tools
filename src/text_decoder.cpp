@@ -12,7 +12,6 @@ void initialize_decoder(string * decoder) {
 
     for (int i = 0x1; i < 0x20; i++) {
         decoder[i] = "";
-
     }
 
     decoder[0x20] = " ";
@@ -126,7 +125,6 @@ void initialize_decoder(string * decoder) {
     for (int i = 0xB4; i < 0x100; i++) {
         decoder[i] = " ";
     }
-
 }
 
 void decode_game_text(fs::path input_name, fs::path output_name, string decoder[]) {

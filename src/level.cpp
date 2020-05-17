@@ -27,7 +27,7 @@ void extract_lev(fs::path file_path) {
         string entry_extension = entry.path().extension().string();
 
         // This extractor doesn't support non WAD files
-        if (entry_extension != "WAD") {
+        if (entry_extension != ".WAD") {
             continue;
         }
 
@@ -38,8 +38,10 @@ void extract_lev(fs::path file_path) {
             continue;
         }
 
-        // Creating folder for extracted files
+        // Removing .WAD from entry name
         entry_name = entry_name.substr(0, entry_name.size() - 4);
+
+        // Creating folder for extracted files
         fs::path output_path = file_path / entry_name;
 
         fs::path out(output_path);
@@ -110,11 +112,8 @@ void extract_lev(fs::path file_path) {
 
             // Freeing data space to be used later for the next file
             delete[] mem_block;
-
         }
 
         cout << entry_name + ".WAD successfully extracted." << endl;
-
     }
-
 }

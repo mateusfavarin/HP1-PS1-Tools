@@ -111,7 +111,6 @@ int get_color_offset(uint16_t* VRAM, int tex_offset, int bit_offset, int bits) {
     }
 
     return offset;
-
 }
 
 int get_page_offset(int x, int y) {
@@ -134,16 +133,11 @@ void extract_textures(string file_name) {
     uint32_t start_offset = 0x0;
 
     if ((tpsx_flag & 0x14) != 0) {
-
         if ((tpsx_flag & 4) == 0) {
-
             start_offset = 0x44;
-
         } else {
-
             start_offset = 0x24;
         }
-
         offset += 0x800 + start_offset;
     }
 
@@ -185,7 +179,6 @@ void extract_textures(string file_name) {
     fs::create_directory(tex_path);
 
     for (int i = 0; i < texture_count; i++) {
-
         tpsx_file.read((char *) &metadata, sizeof(metadata));
 
         // Decrypting texpage
@@ -249,12 +242,9 @@ void extract_textures(string file_name) {
 
                         // Updating texture width
                         tex_offset += 1;
-                    }    
-
+                    }
                 }
-
             }
-
         } else if (texpage.colors == 1) {
             // 8 bit colors
 
@@ -292,11 +282,8 @@ void extract_textures(string file_name) {
                         // Updating texture width
                         tex_offset += 1;
                     }
-       
-                }
-                
+                }   
             }
-
         } else {
             // 16 bit colors
 
@@ -322,11 +309,8 @@ void extract_textures(string file_name) {
 
                     // Updating texture width
                     tex_offset += 1;
-
-                }
-                
+                }   
             }
-
         }
 
         // Label to stop for inner loop and jump to foor outter loop
@@ -340,18 +324,15 @@ void extract_textures(string file_name) {
         
         // Writing RGB colors to file
         for (int i = 0; i < raw_size; i++) {
-
             new_file << (raw_texture[i] & 0x1F) << " ";
             new_file << ((raw_texture[i] >> 5) & 0x1F) << " ";
             new_file << ((raw_texture[i] >> 10) & 0x1F) << "\n";
-
         }
 
         new_file.close();
 
         // Freeing texture memory to be used in the next iteration
-        delete[] raw_texture;
-        
+        delete[] raw_texture;        
     }
 
     tpsx_file.close();

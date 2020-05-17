@@ -18,7 +18,7 @@ bool check_dir(fs::path file_path) {
     // Checking if the folder has POTTER.DIR and POTTER.DAT files
     for (const auto& entry : fs::directory_iterator(folder)) {
 
-        string file_name = entry.path().filename();
+        string file_name = entry.path().filename().string();
 
         if (file_name == "POTTER.DIR") {
             dir = true;

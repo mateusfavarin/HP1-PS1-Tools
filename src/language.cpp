@@ -30,7 +30,6 @@ void extract_lang(fs::path file_path) {
     for (const auto& entry : fs::directory_iterator(lang_folder)) {
 
         // Converting file path to string
-        // string file_name = entry.path().string();
         string file_name = entry.path().stem().string();
 
         // Skipping if the file is the folder to hold the extracted content
@@ -42,7 +41,6 @@ void extract_lang(fs::path file_path) {
         auto input_file = fs::path(file_path / (file_name + ".BIN"));
         auto output_file = fs::path(out / (file_name + ".txt"));
         decode_game_text(input_file, output_file, decoder);
-
     }
 
     cout << "Texts successfully extracted." << endl;
