@@ -140,7 +140,7 @@ void decode_game_text(fs::path input_name, fs::path output_name, string decoder[
 
     do {
         // Read character and write decoded character to text file
-        lang_file.read((char *) &blk, sizeof(blk));
+        lang_file.read(reinterpret_cast<char*>(&blk), sizeof(blk));
         output_file << decoder[blk.character];
     } while ((lang_file.good()));
 }

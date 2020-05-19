@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <filesystem>
+#include <vector>
 #include "extract.h"
 
 using namespace std;
@@ -35,24 +36,6 @@ bool check_dir(fs::path file_path) {
     return false;
 }
 
-string convert_file_name(char name[]) {
-
-    string file_name;
-
-    for (int i = 0; i < NAME_SIZE; i++) {
-
-        // Search for end of string
-        if (name[i] == 0x00) {
-            break;
-        }
-
-        // Adds character to the string
-        file_name += name[i];
-    }
-
-    return file_name;
-}
-
 void extract_dat(fs::path file_path) {
 
     // ifstream to read the Harry Potter DIR and DAT files
@@ -65,7 +48,7 @@ void extract_dat(fs::path file_path) {
 
     // Getting number of files to extract
     HEADER header;
-    potter_dir.read((char *) &header, sizeof(header));
+    potter_dir.read(reinterpret_cast<char*>(&header), sizeof(header));
 
     METADATA metadata;
 
@@ -81,26 +64,24 @@ void extract_dat(fs::path file_path) {
     fs::path lev(potter_path / "LEV");
     fs::create_directory(lev);
 
-    // Memory block to hold variable size of data to read from the POTTER.DAT
-    char * mem_block;
-
     cout << "Extracting POTTER.DAT to POTTER/..." << endl;
 
     // Reading every single file information
     for (int i = 0; i < header.num_files; i++) {
 
         // Reading file metadata
-        potter_dir.read((char *) &metadata, sizeof(metadata));
+        potter_dir.read(reinterpret_cast<char*>(&metadata), sizeof(metadata));
 
-        // Creating a block of memory to read the data from POTTER.DAT
-        mem_block = new char[metadata.size];
+        // Creating a vector to read the data from POTTER.DAT
+        vector<char> mem_block(metadata.size);
 
         // Adjusting pointer to read the data from
         potter_dat.seekg(metadata.offset, ios::beg);
-        potter_dat.read(mem_block, metadata.size);
+        potter_dat.read(mem_block.data(), metadata.size);
 
         // Converting filename to a string
-        string file_name = convert_file_name(metadata.file_name);
+        string file_name(metadata.file_name);
+        file_name = file_name.substr(0, NAME_SIZE);
         string extension = file_name.substr(file_name.size() - 3);
 
         // Creating extracted file
@@ -112,11 +93,7 @@ void extract_dat(fs::path file_path) {
         } else {
             new_file.open(potter_path / "LEV" / file_name, ios::out | ios::binary);
         }
-        new_file.write(mem_block, metadata.size);
-        new_file.close();
-
-        // Freeing data space to be used later for the next file
-        delete[] mem_block;
+        new_file.write(mem_block.data(), metadata.size);
 
         cout << file_name << " successfully extracted." << endl;
 

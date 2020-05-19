@@ -18,7 +18,6 @@ struct METADATA {
 };
 
 bool check_dir(fs::path);
-string convert_file_name(char name[]);
 void extract_dat(fs::path);
 
 #endif
