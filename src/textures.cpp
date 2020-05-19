@@ -329,11 +329,7 @@ void extract_textures(string file_name) {
             new_file << ((raw_texture[i] >> 10) & 0x1F) << "\n";
         }
 
-        new_file.close();
-
         // Freeing texture memory to be used in the next iteration
         delete[] raw_texture;        
     }
-
-    tpsx_file.close();
 }

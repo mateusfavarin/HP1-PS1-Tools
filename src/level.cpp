@@ -2,6 +2,8 @@
 #include <fstream>
 #include <string>
 #include <filesystem>
+#include <algorithm>
+#include <vector>
 #include "text_decoder.h"
 #include "textures.h"
 #include "level.h"
@@ -39,7 +41,7 @@ void extract_lev(fs::path file_path) {
         }
 
         // Removing .WAD from entry name
-        entry_name = entry_name.substr(0, entry_name.size() - 4);
+        entry_name = entry.path().stem().string();
 
         // Creating folder for extracted files
         fs::path output_path = file_path / entry_name;
@@ -55,34 +57,25 @@ void extract_lev(fs::path file_path) {
         lev_file.read((char *) &header, sizeof(header));
 
         LEV_METADATA metadata;
-        char * mem_block;
-
         for (int i = 0; i < 7; i++) {
 
             // Reading metadata
             lev_file.read((char *) &metadata, sizeof(metadata));
 
             // Converting file name to a string
-            string file_type;
-            for (int i = FILE_TYPE - 1; i > -1; i--) {
-
-                // End name on blank space
-                if (metadata.file_name[i] == ' ') {
-                    break;
-                }
-
-                // Add character (big endian) to name
-                file_type += metadata.file_name[i];
-            }
+            string file_type(metadata.file_name);
+            file_type = file_type.substr(0, FILE_TYPE);
+            reverse(file_type.begin(), file_type.end());
+            file_type = file_type.substr(0, file_type.find(" "));
 
             // Creating memory block to read the chunk in the WAD
-            mem_block = new char[metadata.size];
-            lev_file.read(mem_block, metadata.size);
+            vector<char> mem_block(metadata.size);
+            lev_file.read(mem_block.data(), metadata.size);
 
             // Creating new file
             fs::path file_name = output_path / file_type;
             ofstream new_file(file_name, ios::out | ios::binary);
-            new_file.write(mem_block, metadata.size);
+            new_file.write(mem_block.data(), metadata.size);
 
             // If this is a texture ile
             if (file_type == "TPSX") {
@@ -92,7 +85,6 @@ void extract_lev(fs::path file_path) {
                 // Extract all textures in PPM file format
                 string file_name_str = file_name.string();
                 extract_textures(file_name_str);
-
             }
 
             // If this is a game text file
@@ -108,12 +100,7 @@ void extract_lev(fs::path file_path) {
                 // Decoding in game strings to a text file
                 decode_game_text(file_name, text_path / "LPSX.txt", decoder);
             }
-
-
-            // Freeing data space to be used later for the next file
-            delete[] mem_block;
         }
-
         cout << entry_name + ".WAD successfully extracted." << endl;
     }
 }

@@ -22,8 +22,8 @@ int main(int argc, char* argv[]) {
     if (check_dir(folder)) {
 
         extract_dat(folder);
-        extract_lang(folder / "POTTER/LANG");
-        extract_lev(folder / "POTTER/LEV");
+        extract_lang(folder / "POTTER" / "LANG");
+        extract_lev(folder / "POTTER" / "LEV");
 
         cout << "Extraction successfully completed." << endl;
 
