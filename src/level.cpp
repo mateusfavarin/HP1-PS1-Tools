@@ -54,13 +54,13 @@ void extract_lev(fs::path file_path) {
 
          // Reading header
         LEV_HEADER header;
-        lev_file.read((char *) &header, sizeof(header));
+        lev_file.read(reinterpret_cast<char*>(&header), sizeof(header));
 
         LEV_METADATA metadata;
         for (int i = 0; i < 7; i++) {
 
             // Reading metadata
-            lev_file.read((char *) &metadata, sizeof(metadata));
+            lev_file.read(reinterpret_cast<char*>(&metadata), sizeof(metadata));
 
             // Converting file name to a string
             string file_type(metadata.file_name);

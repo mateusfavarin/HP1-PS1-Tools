@@ -48,7 +48,7 @@ void extract_dat(fs::path file_path) {
 
     // Getting number of files to extract
     HEADER header;
-    potter_dir.read((char *) &header, sizeof(header));
+    potter_dir.read(reinterpret_cast<char*>(&header), sizeof(header));
 
     METADATA metadata;
 
@@ -70,7 +70,7 @@ void extract_dat(fs::path file_path) {
     for (int i = 0; i < header.num_files; i++) {
 
         // Reading file metadata
-        potter_dir.read((char *) &metadata, sizeof(metadata));
+        potter_dir.read(reinterpret_cast<char*>(&metadata), sizeof(metadata));
 
         // Creating a vector to read the data from POTTER.DAT
         vector<char> mem_block(metadata.size);

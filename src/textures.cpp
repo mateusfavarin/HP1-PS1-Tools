@@ -22,7 +22,7 @@ uint16_t* fill_vram(ifstream* tpsx_file, int vram_size, int offset) {
     int file_size = tpsx_file->tellg();
 
     tpsx_file->seekg(offset, ios::beg);
-    tpsx_file->read((char *) &vram_offset, sizeof(vram_offset));
+    tpsx_file->read(reinterpret_cast<char*>(&vram_offset), sizeof(vram_offset));
 
     offset += (vram_offset + 2) * 4;
     tpsx_file->seekg(offset, ios::beg);
@@ -38,7 +38,7 @@ uint16_t* fill_vram(ifstream* tpsx_file, int vram_size, int offset) {
             return VRAM;
         }
 
-        tpsx_file->read((char *) &cmd, sizeof(cmd));
+        tpsx_file->read(reinterpret_cast<char*>(&cmd), sizeof(cmd));
         
 
         // If the command is less than zero
@@ -53,7 +53,7 @@ uint16_t* fill_vram(ifstream* tpsx_file, int vram_size, int offset) {
                 return VRAM;
             }
 
-            tpsx_file->read((char *) &pixel, sizeof(pixel));
+            tpsx_file->read(reinterpret_cast<char*>(&pixel), sizeof(pixel));
 
             for (int i = 0; i < cmd; i++) {
                 VRAM[vram_length] = pixel;
@@ -77,7 +77,7 @@ uint16_t* fill_vram(ifstream* tpsx_file, int vram_size, int offset) {
                     return VRAM;
                 }
 
-                tpsx_file->read((char *) &pixel, sizeof(pixel));
+                tpsx_file->read(reinterpret_cast<char*>(&pixel), sizeof(pixel));
                 VRAM[vram_length] = pixel;
                 vram_length += 1;
 
@@ -126,7 +126,7 @@ void extract_textures(string file_name) {
 
     // Reading flag that has information about the textures offset
     uint32_t tpsx_flag;
-    tpsx_file.read((char *) &tpsx_flag, sizeof(tpsx_flag));
+    tpsx_file.read(reinterpret_cast<char*>(&tpsx_flag), sizeof(tpsx_flag));
 
     // Calculating offset based on the flag
     int offset = 0x4;
@@ -148,8 +148,8 @@ void extract_textures(string file_name) {
     int texture_count;
     int vram_size;
 
-    tpsx_file.read((char *) &texture_count, sizeof(texture_count));
-    tpsx_file.read((char *) &vram_size, sizeof(vram_size));
+    tpsx_file.read(reinterpret_cast<char*>(&texture_count), sizeof(texture_count));
+    tpsx_file.read(reinterpret_cast<char*>(&vram_size), sizeof(vram_size));
     vram_size *= 0x10000;
 
     TEXTURE_METADATA metadata;
@@ -179,7 +179,7 @@ void extract_textures(string file_name) {
     fs::create_directory(tex_path);
 
     for (int i = 0; i < texture_count; i++) {
-        tpsx_file.read((char *) &metadata, sizeof(metadata));
+        tpsx_file.read(reinterpret_cast<char*>(&metadata), sizeof(metadata));
 
         // Decrypting texpage
         texpage.x = ((metadata.texpage & 0xF) * 64) - 512;
